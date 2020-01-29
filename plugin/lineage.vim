@@ -37,7 +37,7 @@ function! LineageClose ()
   endif
   call win_gotoid(t:lineage_winid)
   execute ':q!'
-  execute ':bd! ' . t:lineage_bufnr 
+  execute ':bd! ' . t:lineage_bufnr
   execute ':unlet t:lineage_window_open'
   execute ':unlet t:original_winid'
   execute ':unlet t:original_bufnr'
@@ -50,7 +50,7 @@ function! LoadDiffToBuffer (commit, gitname)
 endfunction
 
 " First-time press: open diff with HEAD
-" Further presses: 
+" Further presses:
 " * if the diff window is still open, increase offset with head, reuse it for the next diff
 " * if the diff window was closed, reopen it
 "
@@ -100,7 +100,7 @@ function! Lineage(count, direction)
   let l:commit = strpart(l:oneline, 0, 40)
   let l:message = strpart(l:oneline, 41)
 
-  call LineageOpen() 
+  call LineageOpen()
 
   execute 'f [ HEAD~' . l:lineage_commits_from_head . ' ]'
 

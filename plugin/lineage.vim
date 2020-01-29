@@ -102,8 +102,6 @@ function! Lineage(count, direction)
 
   call LineageOpen() 
 
-  echo "Going for" . a:count
-
   execute 'f [ HEAD~' . l:lineage_commits_from_head . ' ]'
 
   setlocal noreadonly

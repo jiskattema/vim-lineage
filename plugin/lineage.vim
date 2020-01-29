@@ -50,7 +50,6 @@ endfunction
 " Further presses:
 " * if the diff window is still open, increase offset with head, reuse it for the next diff
 " * if the diff window was closed, reopen it
-"
 function! Lineage(count, direction)
   if exists("b:lineage_commits_from_head")
     " We have been called before
@@ -74,40 +73,42 @@ function! Lineage(count, direction)
       let b:lineage_commits_from_head = b:lineage_commits_from_head + a:count
     endif
   else
-    " First-time press, compare to HEAD if count=0
-    if a:count == 0
-      " without count, assume a step of 1
-      let l:count = 1
+    " First-time press
+    if a:direction == 'next'
+      let b:lineage_commits_from_head = a:count
+    elseif a:direction == 'prev'
+      let b:lineage_commits_from_head = 0
     else
-      let l:count = a:count
+      echo 'Illegal direction'
     endif
-    let b:lineage_commits_from_head = l:count
   endif
 
   if b:lineage_commits_from_head < 0
     let b:lineage_commits_from_head = 0
   endif
 
-  " because we switch buffers, copy the count to a local var
-  let l:lineage_commits_from_head = b:lineage_commits_from_head
-
   let l:name = expand('%:p')
   let l:gitname = trim( system('git ls-files --full-name ' . l:name) )
   let l:oneline = trim(
         \ system ('git log --pretty=oneline ' . l:name . ' |
-          \  head -' . l:lineage_commits_from_head . ' |
+          \ head -' . (b:lineage_commits_from_head + 1) . ' |
           \ tail -1'
           \ )
         \ )
-  let l:commit = strpart(l:oneline, 0, 40)
-  let l:message = strpart(l:oneline, 41)
+  let b:lineage_commit = strpart(l:oneline, 0, 40)
+  let b:lineage_message = strpart(l:oneline, 41)
+
+  " because we switch buffers, copy the count to a local var
+  let l:lineage_commits_from_head = b:lineage_commits_from_head
+  let l:lineage_commit = b:lineage_commit
+  let l:lineage_message = b:lineage_message
 
   call LineageOpen()
 
   execute 'f [ HEAD~' . l:lineage_commits_from_head . ' ]'
 
   setlocal noreadonly
-  silent execute '%! git show '. l:commit . ':' . l:gitname
+  silent execute '%! git show '. l:lineage_commit . ':' . l:gitname
   setlocal readonly
 
   call win_gotoid(t:original_winid)

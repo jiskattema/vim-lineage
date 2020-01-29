@@ -46,9 +46,6 @@ function! LineageClose ()
   :diffoff
 endfunction
 
-function! LoadDiffToBuffer (commit, gitname)
-endfunction
-
 " First-time press: open diff with HEAD
 " Further presses:
 " * if the diff window is still open, increase offset with head, reuse it for the next diff
@@ -96,7 +93,12 @@ function! Lineage(count, direction)
 
   let l:name = expand('%:p')
   let l:gitname = trim( system('git ls-files --full-name ' . l:name) )
-  let l:oneline = trim( system ('git log --pretty=oneline ' . l:name . ' | head -' . l:lineage_commits_from_head . ' | tail -1') )
+  let l:oneline = trim(
+        \ system ('git log --pretty=oneline ' . l:name . ' |
+          \  head -' . l:lineage_commits_from_head . ' |
+          \ tail -1'
+          \ )
+        \ )
   let l:commit = strpart(l:oneline, 0, 40)
   let l:message = strpart(l:oneline, 41)
 
